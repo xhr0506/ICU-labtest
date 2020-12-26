@@ -10,6 +10,7 @@ WITH adult_cohort AS(
         CASE WHEN age = '> 89' THEN '91.4' ELSE age END AS age,
         unittype,
 				unitadmitsource,
+				wardid,
 				hospitaladmitsource,
 				unitvisitnumber,
         ROUND(unitdischargeoffset / 60) AS icu_los_hours,
@@ -88,7 +89,7 @@ select pv.*
 from pivoted_vent pv
 left join patient p
 on pv.patientunitstayid = p.patientunitstayid
-where pv.endtime < p.unitdischargeoffset
+where pv.starttime < p.unitdischargeoffset
 and pv.endtime > 0
 )
 ,vent_table as 
@@ -112,6 +113,7 @@ SELECT
     ac.gender,
     ac.age,
     ac.unittype,
+		ac.wardid,
 		ac.unitadmitsource,
 		ac.hospitaladmitsource,
 		ac.unitvisitnumber,
