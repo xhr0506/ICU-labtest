@@ -29,10 +29,41 @@ WITH adult_cohort AS(
 )
 , rrt_table as 
 (
-select distinct patientunitstayid,
+select distinct t.patientunitstayid,
 		1 as rrt
-    from treatment
-    where treatmentstring in (
+    from treatment t
+		left join patient p
+		on t.patientunitstayid = p.patientunitstayid
+		-- from Miguel
+		where t.treatmentstring in(
+			'endocrine|electrolyte correction|treatment of hyperkalemia|dialysis'
+			,'renal|dialysis|C A V H D'
+			,'renal|dialysis|C V V H'
+			,'renal|dialysis|C V V H D'
+			,'renal|dialysis|SLED'
+			,'renal|dialysis|hemodialysis'
+			,'renal|dialysis|hemodialysis|emergent'
+			,'renal|dialysis|hemodialysis|for acute renal failure'
+			,'renal|dialysis|hemodialysis|for chronic renal failure'
+			,'renal|dialysis|peritoneal dialysis'
+			,'renal|dialysis|peritoneal dialysis|emergent'
+			,'renal|dialysis|peritoneal dialysis|for acute renal failure'
+			,'renal|dialysis|peritoneal dialysis|for chronic renal failure'
+			,'renal|dialysis|peritoneal dialysis|with cannula placement'
+			,'renal|dialysis|ultrafiltration (fluid removal only)'
+			,'renal|dialysis|ultrafiltration (fluid removal only)|emergent'
+			,'renal|dialysis|ultrafiltration (fluid removal only)|for acute renal failure'
+			,'renal|dialysis|ultrafiltration (fluid removal only)|for chronic renal failure'
+			,'renal|electrolyte correction|treatment of hyperkalemia|dialysis'
+			,'renal|electrolyte correction|treatment of hyperphosphatemia|dialysis'
+		)	
+		and p.unitvisitnumber = 1
+		-- during icu stay
+		and t.treatmentoffset > 0
+		and t.treatmentoffset < p.unitdischargeoffset
+	
+		-- from Xiaoli	
+    /*where treatmentstring in (
       'renal|dialysis|arteriovenous shunt for renal dialysis'
       ,'renal|dialysis|C A V H D'
       ,'renal|dialysis|C V V H'
@@ -46,7 +77,7 @@ select distinct patientunitstayid,
       ,'renal|dialysis|ultrafiltration (fluid removal only)|emergent'
       ,'renal|dialysis|ultrafiltration (fluid removal only)|for acute renal failure'
       ,'renal|dialysis|ultrafiltration (fluid removal only)|for chronic renal failure'
-      )
+      )*/
 )
 , cardiac_surgery_table as
 (
